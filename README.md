@@ -21,59 +21,74 @@ Developed by: Hariharan Ganesh
 RegisterNumber:  212225040111
 */
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
 
-# Sample dataset
-X = np.array([0,1,2,3,4,5,6,7,8,9])
-Y = np.array([0,0,0,0,0,1,1,1,1,1])
+# Load data
+data = pd.read_csv("Placement_Data.csv")
 
-# Initialize parameters
-w = 0
-b = 0
+# Convert Placed / Not Placed to 1 / 0
+data['status'] = data['status'].map({'Placed': 1, 'Not Placed': 0})
 
-learning_rate = 0.01
-epochs = 1000
-n = len(X)
+# Take only 2 features (simple)
+X = data[['ssc_p', 'mba_p']].values
+y = data['status'].values
+
+# -----------------------------
+# Standard Scaler (Normalization)
+# -----------------------------
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
+# Add bias column (1)
+m = len(y)
+X = np.c_[np.ones(m), X]
 
 # Sigmoid function
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
+# Cost function
+def cost_function(X, y, theta):
+    h = sigmoid(X @ theta)
+    return (-1/m) * np.sum(y*np.log(h) + (1-y)*np.log(1-h))
+
 # Gradient Descent
-for i in range(epochs):
+theta = np.zeros(X.shape[1])
+alpha = 0.1
+cost_history = []
 
-    # Linear model
-    z = w * X + b
+for i in range(500):
+    z = X @ theta
+    h = sigmoid(z)
+    gradient = (1/m) * X.T @ (h - y)
+    theta = theta - alpha * gradient
+    
+    cost = cost_function(X, y, theta)
+    cost_history.append(cost)
 
-    # Prediction
-    y_pred = sigmoid(z)
+# Prediction
+y_pred = (sigmoid(X @ theta) >= 0.5).astype(int)
 
-    # Gradients
-    dw = (1/n) * np.sum((y_pred - Y) * X)
-    db = (1/n) * np.sum(y_pred - Y)
+# Accuracy
+accuracy = np.mean(y_pred == y) * 100
+print("Weights:", theta)
+print("Accuracy:", accuracy, "%")
 
-    # Update parameters
-    w = w - learning_rate * dw
-    b = b - learning_rate * db
-
-print("Weight:", w)
-print("Bias:", b)
-
-# Predictions
-z = w * X + b
-prob = sigmoid(z)
-
-plt.scatter(X, Y, color="blue", label="Actual Data")
-plt.plot(X, prob, color="red", label="Logistic Curve")
-plt.xlabel("X")
-plt.ylabel("Probability")
-plt.legend()
-plt.show()
-```
+# -----------------------------
+# PLOT: Cost vs Iterations
+# -----------------------------
+plt.figure()
+plt.plot(cost_history)
+plt.xlabel("Iterations")
+plt.ylabel("Cost")
+plt.title("Logistic Regression using Gradient Descent")
+plt.show()```
 
 ## Output:
-![logistic regression using gradient descent](sam.png)
-<img width="772" height="606" alt="image" src="https://github.com/user-attachments/assets/7fa3d0d7-b97f-419d-ad83-efc7fb8fb37e" />
+<img width="802" height="626" alt="image" src="https://github.com/user-attachments/assets/434b7e16-dcea-4070-973c-8bb12ce92ea4" />
+
 
 
 
