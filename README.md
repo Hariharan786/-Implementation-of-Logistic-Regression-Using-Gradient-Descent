@@ -87,7 +87,8 @@ plt.title("Logistic Regression using Gradient Descent")
 plt.show()```
 
 ## Output:
-<img width="802" height="626" alt="image" src="https://github.com/user-attachments/assets/434b7e16-dcea-4070-973c-8bb12ce92ea4" />
+<img width="757" height="612" alt="Screenshot 2026-04-29 110327" src="https://github.com/user-attachments/assets/483c3497-05d5-4247-834d-da8ccc7ae6d7" />
+
 
 
 
